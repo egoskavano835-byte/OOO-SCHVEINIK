@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHVEYNIK | ARCHIVE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #111111;
+            --card-bg: #1a1a1a;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --accent: #ff4d00; /* Строгий индустриальный оранжевый */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- ГЛАВНЫЙ ЭКРАН --- */
+        header {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 5% 80px;
+            box-sizing: border-box;
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('main.jpg') no-repeat center center/cover;
+            background-image: linear-gradient(to top, #111 0%, rgba(17,17,17,0.8) 30%, rgba(17,17,17,0.3) 100%), url('main.jpg');
+            z-index: -1;
+            background-attachment: fixed;
+        }
+
+        header h1 {
+            font-size: 6vw;
+            line-height: 0.9;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin: 0;
+            letter-spacing: -2px;
+        }
+
+        header .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+        }
+
+        header .subtitle::before {
+            content: '';
+            width: 40px; height: 2px;
+            background: var(--accent);
+            margin-right: 15px;
+        }
+
+        /* --- СТРУКТУРА КОНТЕНТА --- */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 100px 5%;
+        }
+
+        .intro {
+            font-size: 1.8rem;
+            line-height: 1.5;
+            max-width: 900px;
+            color: #ddd;
+            margin-bottom: 150px;
+            font-weight: 300;
+        }
+
+        /* --- СЕКЦИИ --- */
+        .section-wrap {
+            margin-bottom: 150px;
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 50px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .section-id {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        /* --- СЕТКА ФОТО --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 40px;
+        }
+
+        .photo-item {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer; /* Указываем, что можно нажать */
+        }
+
+        .img-box {
+            width: 100%;
+            height: 350px;
+            overflow: hidden;
+            border-radius: 4px;
+            background: #222;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.2, 1, 0.3, 1);
+            filter: grayscale(30%);
+        }
+
+        /* При наведении появляется иконка лупы */
+        .img-box::after {
+            content: '🔍';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .photo-item:hover .img-box::after {
+            opacity: 1;
+        }
+
+        .photo-item:hover .img-box img {
+            transform: scale(1.05);
+            filter: grayscale(0%) brightness(0.6); /* Затемняем фото при наведении, чтобы было видно лупу */
+        }
+
+        .photo-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .photo-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .photo-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* --- ALERT --- */
+        .alert-modern {
+            background-color: #2a1111;
+            border-left: 3px solid var(--accent);
+            padding: 30px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert-modern strong {
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-right: 15px;
+            text-transform: uppercase;
+        }
+
+        /* --- LIGHTBOX (МОДАЛЬНОЕ ОКНО) --- */
+        #lightbox {
+            display: none; /* Скрыто по умолчанию */
+            position: fixed;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95); /* Почти черный фон */
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        #lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 4px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        
+        #lightbox.active img {
+            transform: scale(1);
+        }
+
+        #close-btn {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: white;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 0.5;
+        }
+
+        #close-btn:hover {
+            color: var(--accent);
+        }
+
+        footer {
+            border-top: 1px solid #333;
+            padding: 80px 5%;
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 3.5rem; }
+            .section-title { font-size: 2rem; }
+            .intro { font-size: 1.2rem; }
+            .gallery-grid { grid-template-columns: 1fr; gap: 30px; }
+            footer { flex-direction: column; gap: 20px; }
+            #close-btn { font-size: 3rem; top: 20px; right: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="lightbox">
+        <div id="close-btn">&times;</div>
+        <img id="lightbox-img" src="" alt="Full view">
+    </div>
+
+    <header>
+        <div class="header-bg"></div>
+        <div class="subtitle">г. Ленинск-Кузнецкий — Промзона №18</div>
+        <h1>ООО «Швейник»<br>Архив предприятия</h1>
+    </header>
+
+    <div class="container">
+        
+        <div class="intro">
+            <p>Цифровой слепок истории. Заброшенная швейная фабрика, застывшая во времени. Мы прошли путь от проходной до швейных цехов, чтобы зафиксировать состояние объекта после ликвидации.</p>
+        </div>
+
+        <div class="section-wrap">
+            <div class="section-head">
+                <h2 class="section-title">Внешний контур</h2>
+                <span class="section-id">01 / EXTERIOR</span>
+            </div>
+            <div class="gallery-grid">
+                <div class="photo-item">
+                    <div class="img-box"><img src="out1.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Фасад здания</span>
+                        <span class="photo-desc">Здание снаружи</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="out2.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Боковой вид</span>
+                        <span class="photo-desc">Здание снаружи</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="corridor_main.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Главная артерия</span>
+                        <span class="photo-desc">Коридор между корпусами</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-wrap">
+            <div class="section-head">
+                <h2 class="section-title">Администрация</h2>
+                <span class="section-id">02 / OFFICE</span>
+            </div>
+            <div class="gallery-grid">
+                <div class="photo-item">
+                    <div class="img-box"><img src="room1.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Хранилище</span>
+                        <span class="photo-desc">2 этаж. Сейфовая комната</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="room2.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Кабинет</span>
+                        <span class="photo-desc">2 этаж. Рабочее место</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="room3.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Техническая</span>
+                        <span class="photo-desc">2 этаж. Оборудование</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="room4.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Заброшенный кабинет</span>
+                        <span class="photo-desc">1 этаж. Аварийное состояние</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="room5.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Комната отдыха</span>
+                        <span class="photo-desc">1 этаж. Спальное место</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-wrap">
+            <div class="section-head">
+                <h2 class="section-title">Общежитие</h2>
+                <span class="section-id">03 / DORMITORY</span>
+            </div>
+            <div class="gallery-grid">
+                <div class="photo-item">
+                    <div class="img-box"><img src="dorm_corr1.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Коридор А</span>
+                        <span class="photo-desc">Входная группа</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="dorm_corr2.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Коридор Б</span>
+                        <span class="photo-desc">Жилой блок</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="dining.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Столовая</span>
+                        <span class="photo-desc">Зона приема пищи</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="shower.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Душевая</span>
+                        <span class="photo-desc">Санитарный узел</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-wrap">
+            <div class="section-head">
+                <h2 class="section-title">Производство</h2>
+                <span class="section-id">04 / PRODUCTION</span>
+            </div>
+
+            <div class="alert-modern">
+                <strong>Инцидент:</strong> 
+                <span>Цех на первом этаже был уничтожен в результате поджога вандалами. Доступ ограничен.</span>
+            </div>
+
+            <div class="gallery-grid">
+                <div class="photo-item">
+                    <div class="img-box"><img src="workshop_corr.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Коридор цехов</span>
+                        <span class="photo-desc">Второй этаж</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="shop1.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Швейный цех №1</span>
+                        <span class="photo-desc">Основной зал</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="machine.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Детали</span>
+                        <span class="photo-desc">Швейная машина</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="shop2.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Швейный цех №2</span>
+                        <span class="photo-desc">Производственная линия</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-wrap">
+            <div class="section-head">
+                <h2 class="section-title">Гаражи</h2>
+                <span class="section-id">05 / GARAGE</span>
+            </div>
+            <div class="gallery-grid">
+                <div class="photo-item">
+                    <div class="img-box"><img src="box1.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Бокс №1</span>
+                        <span class="photo-desc">Гаражное помещение</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <div class="img-box"><img src="box2.jpg" alt="Фото"></div>
+                    <div class="photo-meta">
+                        <span class="photo-title">Бокс №2</span>
+                        <span class="photo-desc">Гаражное помещение</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <div>&copy; 2025 Архив Ленинск-Кузнецкий</div>
+        <div>Северная Промзона, 18</div>
+    </footer>
+
+    <script>
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.getElementById('close-btn');
+        const items = document.querySelectorAll('.photo-item');
+
+        items.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault(); // Чтобы не кидало вверх страницы
+                const img = this.querySelector('img');
+                if (img) {
+                    lightboxImg.src = img.src;
+                    lightbox.classList.add('active');
+                }
+            });
+        });
+
+        // Закрытие по крестику
+        closeBtn.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+
+        // Закрытие по клику на фон
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                lightbox.classList.remove('active');
+            }
+        });
+    </script>
+
+</body>
+</html>
